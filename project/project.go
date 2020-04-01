@@ -2,7 +2,6 @@ package project
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -52,7 +51,7 @@ func Views(db *gorm.DB) gin.HandlerFunc {
 			type jsonData struct {
 				Name        string `json:"proname"`
 				Description string `json:"prodes"`
-				UserID      string `json:"user"`
+				UserID      uint   `json:"user"`
 			}
 			var json jsonData
 			err := c.ShouldBind(&json)
@@ -62,25 +61,24 @@ func Views(db *gorm.DB) gin.HandlerFunc {
 				c.JSON(http.StatusOK, resp)
 				return
 			}
-			userID, _ := strconv.Atoi(json.UserID)
 			// 创建
 			var project Project
 			project.Name = json.Name
 			project.Description = json.Description
-			project.UserID = uint(userID)
+			project.UserID = json.UserID
 			db.Create(&project)
 			// 返回信息
-			data := make(map[string]interface{})
-			data["id"] = project.ID
-			data["proname"] = project.Name
-			data["prodes"] = project.Description
-			data["webresult"] = project.Webresult
-			data["apiresult"] = project.Apiresult
-			data["appresult"] = project.Appresult
-			data["result"] = project.Result
-			data["user"] = project.UserID
-			data["update_time"] = project.UpdatedAt
-			resp["data"] = data
+			// data := make(map[string]interface{})
+			// data["id"] = project.ID
+			// data["proname"] = project.Name
+			// data["prodes"] = project.Description
+			// data["webresult"] = project.Webresult
+			// data["apiresult"] = project.Apiresult
+			// data["appresult"] = project.Appresult
+			// data["result"] = project.Result
+			// data["user"] = project.UserID
+			// data["update_time"] = project.UpdatedAt
+			// resp["data"] = data
 			c.JSON(http.StatusOK, resp)
 		}
 

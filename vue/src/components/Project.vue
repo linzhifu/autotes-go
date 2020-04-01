@@ -362,7 +362,7 @@ export default {
             var body_data = {
                     'proname': this.proname,
                     'prodes': this.prodes,
-                    'user': this.userId,
+                    'user': parseInt(this.userId),
                 }
             var params_data = {'userID':this.userId,'token':this.token}
             this.axios({
@@ -489,34 +489,33 @@ export default {
         },
         // 前端测试
         go_webTest(project) {
-            var url = '/home/webManager/'
+            var url = '/home/test/'
             var query = {
                 'projectId': project.id,
                 'projectName':project.proname,
+                'srcType':'web',
                 'type':'前端'
             }
             this.$router.push({ path: url,query:query})
         },
         // 后端测试
         go_apiTest(project) {
-            var url = '/home/apiManager/'
+            var url = '/home/test/'
             var query = {
                 'projectId': project.id,
                 'projectName':project.proname,
-                'adminUser':project.adminUser,
-                'adminPsw':project.adminPsw,
-                'testUser':project.testUser,
-                'testPsw':project.testPsw,
+                'srcType':'api',
                 'type':'后端'
             }
             this.$router.push({ path: url, query:query})
         },
         // 移动端测试
         go_appTest(project) {
-            var url = '/home/appManager/'
+            var url = '/home/test/'
             var query = {
                 'projectId': project.id,
                 'projectName':project.proname,
+                'srcType':'app',
                 'type':'移动端'
             }
             this.$router.push({ path: url, query:query})

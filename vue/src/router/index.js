@@ -4,15 +4,7 @@ import Login from '@/components/Login'
 import Home from '@/components/Home'
 import User from '@/components/User'
 import Project from '@/components/Project'
-import WebManager from '@/components/WebManager'
-import ApiManager from '@/components/ApiManager'
-import AppManager from '@/components/AppManager'
-import ApiCase from '@/components/ApiCase'
-import WebCase from '@/components/WebCase'
-import AppCase from '@/components/AppCase'
-import WebType from '@/components/WebType'
-import ApiType from '@/components/ApiType'
-import AppType from '@/components/AppType'
+import Test from '@/components/Test'
 import Log from '@/components/Log'
 import Report from '@/components/Report'
 import Src from '@/components/Src'
@@ -48,40 +40,8 @@ export default new Router({
           component: Project
         },
         {
-          path: 'webManager/:projectId?',
-          component: WebManager
-        },
-        {
-          path: 'apiManager/:projectId?',
-          component: ApiManager
-        },
-        {
-          path: 'appManager',
-          component: AppManager
-        },
-        {
-          path: 'apiCase/:apiManagerId?',
-          component: ApiCase
-        },
-        {
-          path: 'webCase/:webManagerId?',
-          component: WebCase
-        },
-        {
-          path: 'appCase/:appManagerId?',
-          component: AppCase
-        },
-        {
-          path: 'webType/',
-          component: WebType
-        },
-        {
-          path: 'appType/',
-          component: AppType
-        },
-        {
-          path: 'apiType/',
-          component: ApiType
+          path: 'test',
+          component: Test
         },
         {
           path: 'log/',

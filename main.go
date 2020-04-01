@@ -2,6 +2,7 @@ package main
 
 import (
 	"autotest/project"
+	"autotest/script"
 	"autotest/user"
 	"fmt"
 	"net/http"
@@ -25,6 +26,9 @@ func dbInit() *gorm.DB {
 	// product
 	var project project.Project
 	db.AutoMigrate(&project)
+	// script
+	var script script.Script
+	db.AutoMigrate(&script)
 	return db
 }
 
@@ -39,6 +43,8 @@ func main() {
 	r.Any("/api/v1/user/:userID", user.JWTAuth(), user.View(db))
 	r.Any("/api/v1/project", user.JWTAuth(), project.Views(db))
 	r.Any("/api/v1/project/:projectID", user.JWTAuth(), project.View(db))
+	r.Any("/api/v1/script", user.JWTAuth(), script.Views(db))
+	r.Any("/api/v1/script/:scriptID", user.JWTAuth(), script.View(db))
 	r.Run(":8000")
 }
 
