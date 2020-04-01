@@ -1,6 +1,7 @@
 package main
 
 import (
+	"autotest/project"
 	"autotest/user"
 	"fmt"
 	"net/http"
@@ -18,6 +19,12 @@ func dbInit() *gorm.DB {
 	if err != nil {
 		panic("failed to connect autotest_go database")
 	}
+	// user
+	var user user.User
+	db.AutoMigrate(&user)
+	// product
+	var project project.Project
+	db.AutoMigrate(&project)
 	return db
 }
 
@@ -30,6 +37,8 @@ func main() {
 	r.POST("/api/v1/login", user.Login(db))
 	r.GET("/api/v1/user", user.JWTAuth(), user.Views(db))
 	r.Any("/api/v1/user/:userID", user.JWTAuth(), user.View(db))
+	r.Any("/api/v1/project", user.JWTAuth(), project.Views(db))
+	r.Any("/api/v1/project/:projectID", user.JWTAuth(), project.View(db))
 	r.Run(":8000")
 }
 

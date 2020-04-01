@@ -71,7 +71,7 @@
             <template slot-scope="scope">
                 <el-tooltip class="item" effect="dark" content="编辑修改" placement="top">
                     <el-button
-                        v-if='scope.row.user==userId || userId==2'
+                        v-if='scope.row.user==userId || userId==1'
                         size="mini"
                         type="primary"
                         @click="open_edit(scope.row)" class="el-icon-edit">
@@ -86,7 +86,7 @@
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="删除" placement="top">
                     <el-button
-                        v-if='scope.row.user==userId || userId==2'
+                        v-if='scope.row.user==userId || userId==1'
                         size="mini"
                         type="danger"
                         @click="handleDelete(scope.$index, scope.row)" icon="el-icon-delete">
@@ -130,7 +130,7 @@ export default {
 		return {
             axios: this.axios,
             url: this.url,
-            userId: this.storage.getItem('userId'),
+            userId: this.storage.getItem('userID'),
             token: this.storage.getItem('token'),
             testUserId:this.storage.getItem('testUserId'),
             testUserToken:this.storage.getItem('testUserToken'),
@@ -161,91 +161,6 @@ export default {
 		};
 	},
 	methods: {
-        // 获取测试用户信息
-        get_testUser() {
-            // 获取测试用户token
-            var loginUrl = '/api/v1/user/login'
-            var loginMethod = 'post'
-            var baseurl = 'https://mpstest.longsys.com'
-            // 管理员用户
-            var adminUserData = {
-                'email':this.adminUser,
-                'pswmd5':md5(this.adminPsw),
-                'timestamp':Date.parse(new Date())
-            }
-            // 测试用户
-            var testUserData = {
-                'email':this.testUser,
-                'pswmd5':md5(this.testPsw),
-                'timestamp':Date.parse(new Date())
-            }
-            // 获取管理员token
-            this.axios({
-                baseURL:baseurl,
-                url:loginUrl,
-                method:loginMethod,
-                data:adminUserData,
-            }).then(response=>{
-                if (response.data.errcode=='0') {
-                    this.storage.setItem('adminUserId',response.data.data['userid'])
-                    this.storage.setItem('adminUserToken',response.data.data['token'])
-                    this.adminUserId=response.data.data['userid']
-                    this.adminUserToken=response.data.data['token']
-                    // 获取测试用户token
-                    this.axios({
-                        baseURL:baseurl,
-                        url:loginUrl,
-                        method:loginMethod,
-                        data:testUserData,
-                    }).then(response=>{
-                        if (response.data.errcode=='0') {
-                            this.storage.setItem('testUserId',response.data.data['userid'])
-                            this.storage.setItem('testUserToken',response.data.data['token'])
-                            this.testUserId=this.storage.getItem('testUserId'),
-                            this.testUserToken=this.storage.getItem('testUserToken')
-                        }
-                        else {
-                            this.$message({
-                                message: '测试用户账户密码异常，请重新设置',
-                                type: 'error',
-                                center: true,
-                                showClose: true,
-                                duration: 0
-                            })
-                            this.testUserFormVisible = true
-                        }
-                    },error=>{
-                        this.$message({
-                            message: '服务器错误，请检查 ' + this.baseurl + ' 服务器是否正常',
-                            type: 'error',
-                            center: true,
-                            showClose: true,
-                            duration: 0
-                        })
-                        return
-                    })
-                }
-                else {
-                    this.$message({
-                        message: '管理员账户密码异常，请重新设置',
-                        type: 'error',
-                        center: true,
-                        showClose: true,
-                        duration: 0
-                    })
-                    this.testUserFormVisible = true
-                }
-            },error=>{
-                this.$message({
-                    message: '服务器错误，请检查 ' + this.baseurl + ' 服务器是否正常',
-                    type: 'error',
-                    center: true,
-                    showClose: true,
-                    duration: 0
-                })
-                return
-            })
-        },
         // 项目测试
         projectTest(row) {
             this.$confirm('项目测试需要等待时间较长, 是否开始测试?', '提示', {
@@ -261,7 +176,7 @@ export default {
                     });
                     this.passText = this.failText = '<p class="el-icon-loading"></p>'
                     var params_data = {
-                        'userId':this.userId,
+                        'userID':this.userId,
                         'token':this.token,
                         'projectId':row['id']
                     }
@@ -322,41 +237,14 @@ export default {
         },
         // 加载数据
         get_projects() {
-            var params_data = {'userId':this.userId,'token':this.token}
+            var params_data = {'userID':this.userId,'token':this.token}
             this.axios({
                 baseURL:this.url,
-                url:'api/v1/project/',
+                url:'api/v1/project',
                 method:'get',
                 params:params_data,
             }).then(response=>{
-                this.projects=response.data.results
-                // 判断是否有上一页
-                this.pre=response.data.previous
-                // 判断是不是量产云平台
-                for (var i = 0, len = this.projects.length; i < len; i++) {
-                    // console.log(this.projects)
-                    if (this.projects[i].proname == '量产云平台') {
-                        this.adminUser=this.projects[i].adminUser,
-                        this.adminPsw=this.projects[i].adminPsw,
-                        this.testUser=this.projects[i].testUser,
-                        this.testPsw=this.projects[i].testPsw
-                        this.get_testUser()
-                    }
-                }
-                if (!this.pre) {
-                    this.isPreDisabled=true
-                }
-                else {
-                    this.isPreDisabled=false
-                }
-                // 判断是否有下一页
-                this.next=response.data.next
-                if (!this.next) {
-                    this.isNextDisabled=true
-                }
-                else {
-                    this.isNextDisabled=false
-                }
+                this.projects=response.data.datas
             },error=>{
                 this.$message({
                         message: '匿名用户，请先登录',
@@ -387,10 +275,10 @@ export default {
             }
             // 关闭编辑框
             this.dialogFormVisible = false
-            var params_data = {'userId':this.userId,'token':this.token}
+            var params_data = {'userID':this.userId,'token':this.token}
             this.axios({
                 baseURL:this.url,
-                url:'api/v1/project/'+row.id+'/',
+                url:'api/v1/project/'+row.id,
                 method:'patch',
                 params:params_data,
                 data:row,
@@ -427,10 +315,10 @@ export default {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {
-                var params_data = {'userId':this.userId,'token':this.token}
+                var params_data = {'userID':this.userId,'token':this.token}
                 this.axios({
                     baseURL:this.url,
-                    url:'api/v1/project/'+row.id+'/',
+                    url:'api/v1/project/'+row.id,
                     method:'delete',
                     params:params_data,
                 }).then(response=>{
@@ -476,10 +364,10 @@ export default {
                     'prodes': this.prodes,
                     'user': this.userId,
                 }
-            var params_data = {'userId':this.userId,'token':this.token}
+            var params_data = {'userID':this.userId,'token':this.token}
             this.axios({
                 baseURL:this.url,
-                url:'api/v1/project/',
+                url:'api/v1/project',
                 method:'post',
                 params:params_data,
                 data:body_data,

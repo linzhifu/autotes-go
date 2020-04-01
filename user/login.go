@@ -12,7 +12,7 @@ import (
 func Login(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user User
-		db.AutoMigrate(&user)
+		// db.AutoMigrate(&user)
 		data := make(map[string]interface{})
 		resp := gin.H{
 			"errcode": 0,
@@ -26,7 +26,13 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 			Psw       string `json:"password"`
 		}
 		var json jsonData
-		c.ShouldBind(&json)
+		err := c.ShouldBind(&json)
+		if err != nil {
+			resp["errcode"] = 1
+			resp["errmsg"] = "invalid parameter"
+			c.JSON(http.StatusOK, resp)
+			return
+		}
 		switch loginType := json.LoginType; loginType {
 		// 用户名密码登录
 		case "username":

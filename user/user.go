@@ -47,52 +47,6 @@ func (user *User) BeforeSave() {
 	user.Psw = fmt.Sprintf("%x", md5Psw)
 }
 
-// View user
-func View(db *gorm.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var user User
-		data := make(map[string]interface{})
-		resp := gin.H{
-			"errcode": 0,
-			"errmsg":  "ok",
-		}
-		id := c.Param("userID")
-		db.Where("ID=?", id).First(&user)
-		// Patch
-		if c.Request.Method == http.MethodPatch {
-			type Info struct {
-				Name string `json:"username"`
-				Psw  string `json:"password"`
-			}
-			var info Info
-			err := c.ShouldBind(&info)
-			if err != nil {
-				resp["errcode"] = 1
-				resp["errmsg"] = "invalid parameter"
-				c.JSON(http.StatusOK, resp)
-				return
-			}
-			// 保存前做MD5加密
-			if info.Psw != "" {
-				md5Psw := md5.Sum([]byte(info.Psw))
-				info.Psw = fmt.Sprintf("%x", md5Psw)
-			}
-			db.Model(&user).Updates(&info)
-		}
-		// Delete
-		if c.Request.Method == http.MethodDelete {
-			if user.ID != 0 {
-				db.Delete(&user)
-			}
-		}
-		data["id"] = user.ID
-		data["username"] = user.Name
-		data["email"] = user.Email
-		resp["data"] = data
-		c.JSON(http.StatusOK, resp)
-	}
-}
-
 // Views get all users
 func Views(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -111,6 +65,52 @@ func Views(db *gorm.DB) gin.HandlerFunc {
 			datas[i] = data
 		}
 		resp["data"] = datas
+		c.JSON(http.StatusOK, resp)
+	}
+}
+
+// View get/edit/delete a user
+func View(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var user User
+		data := make(map[string]interface{})
+		resp := gin.H{
+			"errcode": 0,
+			"errmsg":  "ok",
+		}
+		id := c.Param("userID")
+		db.Where("ID=?", id).First(&user)
+		switch c.Request.Method {
+		// Patch
+		case http.MethodPatch:
+			type Info struct {
+				Name string `json:"username"`
+				Psw  string `json:"password"`
+			}
+			var info Info
+			err := c.ShouldBind(&info)
+			if err != nil {
+				resp["errcode"] = 1
+				resp["errmsg"] = "invalid parameter"
+				c.JSON(http.StatusOK, resp)
+				return
+			}
+			// 保存前做MD5加密
+			if info.Psw != "" {
+				md5Psw := md5.Sum([]byte(info.Psw))
+				info.Psw = fmt.Sprintf("%x", md5Psw)
+			}
+			db.Model(&user).Updates(&info)
+		// Delete
+		case http.MethodDelete:
+			if user.ID != 0 {
+				db.Delete(&user)
+			}
+		}
+		data["id"] = user.ID
+		data["username"] = user.Name
+		data["email"] = user.Email
+		resp["data"] = data
 		c.JSON(http.StatusOK, resp)
 	}
 }
