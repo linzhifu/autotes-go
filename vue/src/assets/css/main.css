@@ -1,0 +1,33 @@
+body {
+    /* background: #93defe;
+    background: url('../img/1.jpg') */
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none
+}
+div.el-collapse-item__header.is-active {
+    color: #3a8ee6;
+    font-size: 18px;
+    /* border-bottom-color: #eee; */
+}
+.funtest {
+    margin-left: 20px;
+}
+.funtest .el-collapse-item__header.is-active {
+    color: #3a8ee6;
+    font-size: 16px;
+    /* border-bottom-color: #eee; */
+}
+.pass input{
+    color: green;
+}
+.fail input{
+    color: red;
+}
+
+.el-card__header {
+    background: #eee
+}
