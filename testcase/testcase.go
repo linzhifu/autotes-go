@@ -1,4 +1,4 @@
-package script
+package testcase
 
 import (
 	"net/http"
@@ -7,8 +7,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// Script a script info
-type Script struct {
+// TestCase a case info
+type TestCase struct {
 	gorm.Model
 	UserID      uint
 	ProjectID   uint
@@ -19,7 +19,7 @@ type Script struct {
 	Index       int  `gorm:"DEFAULT:1"`
 }
 
-// Views get all scripts or add script
+// Views get all cases or add a case
 func Views(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		resp := gin.H{
@@ -30,19 +30,20 @@ func Views(db *gorm.DB) gin.HandlerFunc {
 		case http.MethodGet:
 			projectID := c.Query("project")
 			srcType := c.Query("src_type")
-			var scripts []Script
-			db.Where("type = ? AND project_id = ?", srcType, projectID).Find(&scripts)
-			datas := make([]map[string]interface{}, len(scripts))
-			for i, script := range scripts {
+			var testCases []TestCase
+			db.Where("type = ? AND project_id = ?", srcType, projectID).Find(&testCases)
+			datas := make([]map[string]interface{}, len(testCases))
+			for i, testCase := range testCases {
 				// 返回信息
 				data := make(map[string]interface{})
-				data["id"] = script.ID
-				data["appname"] = script.Name
-				data["appdes"] = script.Description
-				data["index"] = script.Index
-				data["user"] = script.UserID
-				data["update_time"] = script.UpdatedAt
-				data["result"] = script.Result
+				data["id"] = testCase.ID
+				data["appname"] = testCase.Name
+				data["appdes"] = testCase.Description
+				data["index"] = testCase.Index
+				data["user"] = testCase.UserID
+				data["update_time"] = testCase.UpdatedAt
+				data["src_type"] = testCase.Type
+				data["result"] = testCase.Result
 				datas[i] = data
 			}
 			resp["datas"] = datas
@@ -64,29 +65,29 @@ func Views(db *gorm.DB) gin.HandlerFunc {
 				return
 			}
 			// 创建
-			var script Script
-			script.Name = json.Name
-			script.Description = json.Description
-			script.Type = json.Type
-			script.UserID = json.UserID
-			script.ProjectID = json.ProjectID
-			db.Create(&script)
+			var testCase TestCase
+			testCase.Name = json.Name
+			testCase.Description = json.Description
+			testCase.Type = json.Type
+			testCase.UserID = json.UserID
+			testCase.ProjectID = json.ProjectID
+			db.Create(&testCase)
 			c.JSON(http.StatusOK, resp)
 		}
 
 	}
 }
 
-// View edit/delete a script
+// View edit/delete a testCase
 func View(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var script Script
+		var testCase TestCase
 		resp := gin.H{
 			"errcode": 0,
 			"errmsg":  "ok",
 		}
-		id := c.Param("scriptID")
-		db.Where("ID=?", id).First(&script)
+		id := c.Param("testCaseID")
+		db.Where("ID=?", id).First(&testCase)
 		switch c.Request.Method {
 		// Patch
 		case http.MethodPatch:
@@ -103,11 +104,11 @@ func View(db *gorm.DB) gin.HandlerFunc {
 				c.JSON(http.StatusOK, resp)
 				return
 			}
-			db.Model(&script).Updates(&info)
+			db.Model(&testCase).Updates(&info)
 		// Delete
 		case http.MethodDelete:
-			if script.ID != 0 {
-				db.Delete(&script)
+			if testCase.ID != 0 {
+				db.Delete(&testCase)
 			}
 		}
 		c.JSON(http.StatusOK, resp)

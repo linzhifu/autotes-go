@@ -7,7 +7,7 @@ import Project from '@/components/Project'
 import Test from '@/components/Test'
 import Log from '@/components/Log'
 import Report from '@/components/Report'
-import Src from '@/components/Src'
+import Src from '@/components/Srcipt'
 import Mpcloud from '@/components/template/Mpcloud'
 
 Vue.use(Router)

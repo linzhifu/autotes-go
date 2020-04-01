@@ -73,7 +73,7 @@ export default {
         return {
             axios: this.axios,
             url: this.url,
-            userId: this.storage.getItem('userId'),
+            userId: this.storage.getItem('userID'),
             token: this.storage.getItem('token'),
             srcUser:this.$route.query.userid,
             testBtn:'开始测试',
@@ -144,7 +144,6 @@ export default {
                         name:value,
                         content:'# 目前只支持python3文件'
                     }
-                    this.edit_appsrc(item)
                     this.editableTabs.push(item)
                     this.editableTabsValue = value
                 }).catch(() => {   
@@ -173,46 +172,6 @@ export default {
                             item = tab
                             item.index = index
                         }
-                    })
-                    var data = {
-                        type:this.$route.query.type,
-                        id:this.$route.query.id,
-                        src:item
-                    }
-                    this.axios({
-                        baseURL:this.url,
-                        url:'api/v1/saveSrc',
-                        method:'delete',
-                        params:params_data,
-                        data:data
-                    }).then(response=>{
-                        // 判断是否成功
-                        if (!response.data.errcode) {
-                            this.$message({
-                                message: '删除成功',
-                                type: 'success',
-                                center: true
-                            });
-                            // 删除当前显示的页面,切换到main.py
-                            if (targetName == this.editableTabsValue) {
-                                this.editableTabsValue = 'main'
-                            }
-                            // 删除选中页面
-                            this.editableTabs.splice(item.index,1)
-                        }
-                        else {
-                            this.$message({
-                                message: "删除失败",
-                                type: 'error',
-                                center: true
-                            })
-                        }
-                    },error=>{
-                        this.$message({
-                            message: '自动化测试平台异常，请检查网络',
-                            type: 'error',
-                            center: true
-                        })
                     })
                 }).catch(() => {
                 })
@@ -354,10 +313,10 @@ export default {
     computed: {
     },
     created() {
-        this.get_appSrc()
-        if (this.$route.query.userid==this.userId || this.userId==2) {
-            this.options.readOnly = false
-        }
+        // this.get_appSrc()
+        // if (this.$route.query.userid==this.userId || this.userId==2) {
+        //     this.options.readOnly = false
+        // }
     }
 }
 </script>

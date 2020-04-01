@@ -240,7 +240,7 @@ export default {
         },
         // 脚本测试-获取数据
         get_appSrcCases() {
-            var url = 'api/v1/script'
+            var url = 'api/v1/testcase'
             var params_data = {
                 'userID':this.userId,
                 'token':this.token,
@@ -284,7 +284,7 @@ export default {
             var params_data = {'userID':this.userId,'token':this.token}
             this.axios({
                 baseURL:this.url,
-                url:'api/v1/script',
+                url:'api/v1/testcase',
                 method:'post',
                 params:params_data,
                 data:body_data,
@@ -341,7 +341,7 @@ export default {
             var params_data = {'userID':this.userId,'token':this.token}
             this.axios({
                 baseURL:this.url,
-                url:'api/v1/script/'+row.id,
+                url:'api/v1/testcase/'+row.id,
                 method:'patch',
                 params:params_data,
                 data:row,
@@ -383,7 +383,7 @@ export default {
                 var params_data = {'userID':this.userId,'token':this.token}
                 this.axios({
                     baseURL:this.url,
-                    url:'api/v1/script/'+row.id,
+                    url:'api/v1/testcase/'+row.id,
                     method:'delete',
                     params:params_data,
                 }).then(response=>{
